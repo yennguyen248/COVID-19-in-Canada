@@ -6,26 +6,6 @@ libname mycovid cas caslib=casuser;
 %let mycovid=casuser;
 %let tmplib=casuser;
 
-*****************************/*Import Cases from Isha Berry Github*/********************************;
-/*  */
-/* FILENAME running url */
-/* 'https://raw.githubusercontent.com/ishaberry/Covid19Canada/master/cases.csv' debug; */
-/* proc import datafile=running out=covid_case */
-/* DBMS=csv REPLACE; */
-/* GETNAMES=no; */
-/* datarow=2; */
-/* run; */
-/*  */
-/* data covid_case; */
-/* set covid_case; */
-/* seq=_n_; */
-/* if seq =1 or seq=2 or seq =3 then delete; */
-/* drop var13 var15 var16; */
-/* rename var1=caseID var2=Prov_Case var3=age var4=sex var5=health_region var6=province var7=country var8=date_report */
-/* var9=report_week var10=travel var11=travel_source var12=local_soure var14=additional; */
-/* run; */
-
-
 ************************/*Import CASES_NEW from Isha Berry Github*/*********************************;
 
 /**************************************/*Case2020*/************************************************/;
@@ -42,18 +22,18 @@ proc cas;
    session mysession;
 
 /* Drop the previous version of this Global table in CAS Memory before loading it */
-   table.dropTable / table="COVID_19_CANADA_CASE20_ABJ" quiet=TRUE;
+   table.dropTable / table="COVID_19_CANADA_CASE20" quiet=TRUE;
 run;
 
 /* Import the csv into CAS via server side upload with GLOBAL scope as opposed to client side with PROC CASUTIL */
 upload path=&temppath.                                         
-   casOut={name='COVID_19_CANADA_CASE20_ABJ' replace=TRUE caslib="&mycovid"} 
+   casOut={name='COVID_19_CANADA_CASE20' replace=TRUE caslib="&mycovid"} 
 	importOptions={fileType="csv"};
 run;
 
 /*Format Date*/
-data &tmplib..covid_case20_abj;
-	set mycovid.COVID_19_CANADA_CASE20_ABJ (datalimit=1000M);
+data &tmplib..covid_case20;
+	set mycovid.COVID_19_CANADA_CASE20 (datalimit=1000M);
 	drop additional_info additional_source report_week method_note travel_yn;
 	new_date=input(date_report, ddmmyy10.);
 	format new_date date9.;
@@ -61,22 +41,10 @@ data &tmplib..covid_case20_abj;
 	rename new_date=date_report;
 run;
 
-/*  */
-/* proc cas;             */
-/*    datastep.runCode /                        */
-/*    code = "data covid_case20_abj (replace=yes); */
-/*            set mycovid.COVID_19_CANADA_CASE20_ABJ; */
-/*            drop additional_info additional_source report_week method_note travel_yn; */
-/*            new_date=input(date_report,ddmmyy10.); */
-/*            format new_date date9.; */
-/*            drop date_report; */
-/*            rename new_date=date_report; */
-/*            run;"; */
-/* run; */
-/* quit;  */
+
 
 /**************************************/*Case2021*/************************************************/;
-%let data='https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/individual_level/cases_2021.csv';
+%let data='https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/individual_level/cases_2021_1.csv';
 filename t temp;
 
 proc http method='get' url=&data. out=t TIMEOUT=120;
@@ -89,102 +57,108 @@ proc cas;
    session mysession;
 
 /* Drop the previous version of this Global table in CAS Memory before loading it */
-   table.dropTable / table="COVID_19_CANADA_CASE21_ABJ" quiet=TRUE;
+   table.dropTable / table="COVID_19_CANADA_CASE21_1" quiet=TRUE;
 run;
 
 /* Import the csv into CAS via server side upload with GLOBAL scope as opposed to client side with PROC CASUTIL */
 upload path=&temppath.                                         
-   casOut={name='COVID_19_CANADA_CASE21_ABJ' replace=TRUE caslib="&mycovid"} 
+   casOut={name='COVID_19_CANADA_CASE21_1' replace=TRUE caslib="&mycovid"} 
 	importOptions={fileType="csv"};
 run;
 
 /*Format Date*/
-data &tmplib..covid_case21_abj;
-	set mycovid.COVID_19_CANADA_CASE21_ABJ (datalimit=1000M);
+data &tmplib..covid_case21_1;
+	set mycovid.COVID_19_CANADA_CASE21_1 (datalimit=1000M);
 	drop additional_info additional_source report_week method_note travel_yn;
 	new_date=input(date_report, ddmmyy10.);
 	format new_date date9.;
 	drop date_report;
 	rename new_date=date_report;
 run;
-/*  */
-/* proc cas;             */
-/*    datastep.runCode /                        */
-/*    code = "data covid_case21_abj (replace=yes); */
-/*            set &mycovid..COVID_19_CANADA_CASE21_ABJ; */
-/*            drop additional_info additional_source report_week method_note travel_yn; */
-/*            new_date=input(date_report,ddmmyy10.); */
-/*            format new_date date9.; */
-/*            drop date_report; */
-/*            rename new_date=date_report; */
-/*            run;"; */
-/* run; */
-/* quit;  */
+
+%let data='https://raw.githubusercontent.com/ccodwg/Covid19Canada/master/individual_level/cases_2021_2.csv';
+filename t temp;
+
+proc http method='get' url=&data. out=t TIMEOUT=120;
+run;
+
+/* create temppath in order to use server side cas upload */
+%let temppath = %sysfunc(quote(%sysfunc(pathname(t))));
+
+proc cas;
+   session mysession;
+
+/* Drop the previous version of this Global table in CAS Memory before loading it */
+   table.dropTable / table="COVID_19_CANADA_CASE21_2" quiet=TRUE;
+run;
+
+/* Import the csv into CAS via server side upload with GLOBAL scope as opposed to client side with PROC CASUTIL */
+upload path=&temppath.                                         
+   casOut={name='COVID_19_CANADA_CASE21_2' replace=TRUE caslib="&mycovid"} 
+	importOptions={fileType="csv"};
+run;
+
+/*Format Date*/
+data &tmplib..covid_case21_2;
+	set mycovid.COVID_19_CANADA_CASE21_2 (datalimit=1000M);
+	drop additional_info additional_source report_week method_note travel_yn;
+	new_date=input(date_report, ddmmyy10.);
+	format new_date date9.;
+	drop date_report;
+	rename new_date=date_report;
+run;
+
+
 
 /****************************/*COMBINE Case2020 and Case2021*/**********************************/;
-data mycovid.covid_cases_abj (replace=yes);
-	set &tmplib..COVID_CASE20_ABJ
-		   &tmplib..COVID_CASE21_ABJ;
+data mycovid.covid_cases (replace=yes);
+	set &tmplib..COVID_CASE20
+		   &tmplib..COVID_CASE21_1
+			&tmplib..COVID_CASE21_2;
 run;
-/*  */
-/* proc cas;             */
-/*    datastep.runCode /                        */
-/*    code = "data covid_cases_abj (replace=yes); */
-/*            set &mycovid..COVID_CASE20_ABJ */
-/* 		   &mycovid..COVID_CASE21_ABJ; */
-/*            run;"; */
-/* run; */
-/* quit;  */
 
 /**************************/*Finalize Case table and cleanup/**********************************/;
 /*Promote the final case table*/
+%if %sysfunc(exist(&mycovid..COVID_19_CANADA_CASE)) %then %do;
+proc delete data=&mycovid..COVID_19_CANADA_CASE;
+run;
 proc casutil;
-%if %sysfunc(exist(&mycovid..COVID_19_CANADA_CASE_ABJ)) %then %do;
-droptable casdata="COVID_19_CANADA_CASE_ABJ" incaslib="&mycovid" quiet;
-promote casdata="COVID_CASES_ABJ" incaslib="&mycovid" outcaslib="&mycovid" casout="COVID_19_CANADA_CASE_ABJ";
+promote casdata="COVID_CASES" incaslib="&mycovid" outcaslib="&mycovid" casout="COVID_19_CANADA_CASE";
+run;
 %end;
 %else %do;
-promote casdata="COVID_CASES_ABJ" incaslib="&mycovid" outcaslib="&mycovid" casout="COVID_19_CANADA_CASE_ABJ";
+proc casutil;
+promote casdata="COVID_CASES" incaslib="&mycovid" outcaslib="&mycovid" casout="COVID_19_CANADA_CASE";
+run;
 %end;
 
 /*Clean up tables that won't be used in the later part*/
 /*Drop if the file already exists*/
-%if %sysfunc(exist(&mycovid..COVID_19_CANADA_CASE20_ABJ)) %then %do;
-proc delete data=&mycovid..COVID_19_CANADA_CASE20_ABJ;
+%if %sysfunc(exist(&mycovid..COVID_19_CANADA_CASE20)) %then %do;
+proc delete data=&mycovid..COVID_19_CANADA_CASE20;
 run;
 %end;
-%if %sysfunc(exist(&mycovid..COVID_19_CANADA_CASE21_ABJ)) %then %do;
-proc delete data=&mycovid..COVID_19_CANADA_CASE21_ABJ;
+%if %sysfunc(exist(&mycovid..COVID_19_CANADA_CASE21_1)) %then %do;
+proc delete data=&mycovid..COVID_19_CANADA_CASE21_1;
 run;
 %end;
-%if %sysfunc(exist(&mycovid..COVID_CASE20_ABJ)) %then %do;
-proc delete data=&mycovid..COVID_CASE20_ABJ;
+%if %sysfunc(exist(&mycovid..COVID_19_CANADA_CASE21_2)) %then %do;
+proc delete data=&mycovid..COVID_19_CANADA_CASE21_2;
 run;
 %end;
-%if %sysfunc(exist(&mycovid..COVID_CASE21_ABJ)) %then %do;
-proc delete data=&mycovid..COVID_CASE21_ABJ;
+%if %sysfunc(exist(&mycovid..COVID_CASE20)) %then %do;
+proc delete data=&mycovid..COVID_CASE20;
+run;
+%end;
+%if %sysfunc(exist(&mycovid..COVID_CASE21_1)) %then %do;
+proc delete data=&mycovid..COVID_CASE21_1;
+run;
+%end;
+%if %sysfunc(exist(&mycovid..COVID_CASE21_2)) %then %do;
+proc delete data=&mycovid..COVID_CASE21_2;
 run;
 %end;
 
-
-************************/*Import Deaths from Isha Berry Github*/*********************************;
-/*  */
-/* FILENAME running url */
-/* 'https://raw.githubusercontent.com/ishaberry/Covid19Canada/master/mortality.csv' debug; */
-/* proc import datafile=running out=covid_deaths */
-/* DBMS=csv REPLACE; */
-/* GETNAMES=no; */
-/* datarow=2; */
-/* run; */
-/*  */
-/* data covid_deaths; */
-/* set covid_deaths; */
-/* seq=_n_; */
-/* if seq =1 or seq=2 or seq =3 then delete; */
-/* drop var10 var12 var13; */
-/* rename var1=deathID var2=Prov_Death var3=caseID var4=age var5=sex var6=health_region var7=province  */
-/* var8=country var9=date_report var11=additional; */
-/* run; */
 
 
 ************************/*Import Deaths 2020 from Isha Berry Github*/*****************************;
@@ -202,18 +176,18 @@ proc cas;
    session mysession;
 
 /* Drop the previous version of this Global table in CAS Memory before loading it */
-   table.dropTable / table="COVID_19_CANADA_DEATH20_ABJ" quiet=TRUE;
+   table.dropTable / table="COVID_19_CANADA_DEATH20" quiet=TRUE;
 run;
 
 /* Import the csv into CAS via server side upload with GLOBAL scope as opposed to client side with PROC CASUTIL */
 upload path=&temppath.                                         
-   casOut={name='COVID_19_CANADA_DEATH20_ABJ' replace=TRUE caslib="&mycovid"} 
+   casOut={name='COVID_19_CANADA_DEATH20' replace=TRUE caslib="&mycovid"} 
 	importOptions={fileType="csv"};
 run;
 
 /*Format Date*/
-data &tmplib..covid_deaths20_abj;
-	set mycovid.COVID_19_CANADA_DEATH20_ABJ (datalimit=1000M);
+data &tmplib..covid_deaths20;
+	set mycovid.COVID_19_CANADA_DEATH20 (datalimit=1000M);
 	drop additional_info additional_source;
 	new_date=input(date_death_report, ddmmyy10.);
 	format new_date date9.;
@@ -221,19 +195,6 @@ data &tmplib..covid_deaths20_abj;
 	rename new_date=date_report;
 run;
 
-/*  */
-/* proc cas;             */
-/*    datastep.runCode /                        */
-/*    code = "data covid_deaths20_abj (replace=yes); */
-/*            set &mycovid..COVID_19_CANADA_DEATH20_ABJ; */
-/*            drop additional_info additional_source; */
-/*            new_date=input(date_death_report,ddmmyy10.); */
-/*            format new_date date9.; */
-/*            drop date_death_report; */
-/*            rename new_date=date_report; */
-/*            run;"; */
-/* run; */
-/* quit;  */
 
 
 ************************/*Import Deaths 2021 from Isha Berry Github*/*****************************;
@@ -251,18 +212,18 @@ proc cas;
    session mysession;
 
 /* Drop the previous version of this Global table in CAS Memory before loading it */
-   table.dropTable / table="COVID_19_CANADA_DEATH21_ABJ" quiet=TRUE;
+   table.dropTable / table="COVID_19_CANADA_DEATH21" quiet=TRUE;
 run;
 
 /* Import the csv into CAS via server side upload with GLOBAL scope as opposed to client side with PROC CASUTIL */
 upload path=&temppath.                                         
-   casOut={name='COVID_19_CANADA_DEATH21_ABJ' replace=TRUE caslib="&mycovid"} 
+   casOut={name='COVID_19_CANADA_DEATH21' replace=TRUE caslib="&mycovid"} 
 	importOptions={fileType="csv"};
 run;
 
 /*Format Date*/
-data &tmplib..covid_deaths21_abj;
-	set mycovid.COVID_19_CANADA_DEATH21_ABJ;
+data &tmplib..covid_deaths21;
+	set mycovid.COVID_19_CANADA_DEATH21;
 	drop additional_info additional_source;
 	new_date=input(date_death_report, ddmmyy10.);
 	format new_date date9.;
@@ -270,61 +231,41 @@ data &tmplib..covid_deaths21_abj;
 	rename new_date=date_report;
 run;
 
-/* proc cas;             */
-/*    datastep.runCode /                        */
-/*    code = "data covid_deaths21_abj (replace=yes); */
-/*            set &mycovid..COVID_19_CANADA_DEATH21_ABJ; */
-/*            drop additional_info additional_source; */
-/*            new_date=input(date_death_report,ddmmyy10.); */
-/*            format new_date date9.; */
-/*            drop date_death_report; */
-/*            rename new_date=date_report; */
-/*            run;"; */
-/* run; */
-/* quit;  */
+
 
 /****************************/*COMBINE Deaths20 and Deaths21*/**********************************/;
 
-data mycovid.covid_deaths_abj (replace=yes);
-	set &tmplib..COVID_DEATHS20_ABJ
-		   &tmplib..COVID_DEATHS21_ABJ;
+data mycovid.covid_deaths (replace=yes);
+	set &tmplib..COVID_DEATHS20
+		   &tmplib..COVID_DEATHS21;
 run;
-
-/* proc cas;             */
-/*    datastep.runCode /                        */
-/*    code = "data covid_deaths_abj (replace=yes); */
-/*            set &mycovid..COVID_DEATHS20_ABJ */
-/* 		   &mycovid..COVID_DEATHS21_ABJ; */
-/*            run;"; */
-/* run; */
-/* quit;  */
 
 /**************************/*Finalize Death table and cleanup/**********************************/;
 /*Promote the final death table*/
 proc casutil;
-%if %sysfunc(exist(&mycovid..COVID_19_CANADA_DEATH_ABJ)) %then %do;
-droptable casdata="COVID_19_CANADA_DEATH_ABJ" incaslib="&mycovid" quiet;
-promote casdata="COVID_DEATHS_ABJ" incaslib="&mycovid" outcaslib="&mycovid" casout="COVID_19_CANADA_DEATH_ABJ";
+%if %sysfunc(exist(&mycovid..COVID_19_CANADA_DEATH)) %then %do;
+droptable casdata="COVID_19_CANADA_DEATH" incaslib="&mycovid" quiet;
+promote casdata="COVID_DEATHS" incaslib="&mycovid" outcaslib="&mycovid" casout="COVID_19_CANADA_DEATH";
 %end;
 %else %do;
-promote casdata="COVID_DEATHS_ABJ" incaslib="&mycovid" outcaslib="&mycovid" casout="COVID_19_CANADA_DEATH_ABJ";
+promote casdata="COVID_DEATHS" incaslib="&mycovid" outcaslib="&mycovid" casout="COVID_19_CANADA_DEATH";
 %end;
 
 /*Clean up tables that won't be used in later part*/
-%if %sysfunc(exist(&mycovid..COVID_19_CANADA_DEATH20_ABJ)) %then %do;
-proc delete data=&mycovid..COVID_19_CANADA_DEATH20_ABJ;
+%if %sysfunc(exist(&mycovid..COVID_19_CANADA_DEATH20)) %then %do;
+proc delete data=&mycovid..COVID_19_CANADA_DEATH20;
 run;
 %end;
-%if %sysfunc(exist(&mycovid..COVID_19_CANADA_DEATH21_ABJ)) %then %do;
-proc delete data=&mycovid..COVID_19_CANADA_DEATH21_ABJ;
+%if %sysfunc(exist(&mycovid..COVID_19_CANADA_DEATH21)) %then %do;
+proc delete data=&mycovid..COVID_19_CANADA_DEATH21;
 run;
 %end;
-%if %sysfunc(exist(&mycovid..COVID_DEATHS20_ABJ)) %then %do;
-proc delete data=&mycovid..COVID_DEATHS20_ABJ;
+%if %sysfunc(exist(&mycovid..COVID_DEATHS20)) %then %do;
+proc delete data=&mycovid..COVID_DEATHS20;
 run;
 %end;
-%if %sysfunc(exist(&mycovid..COVID_DEATHS21_ABJ)) %then %do;
-proc delete data=&mycovid..COVID_DEATHS21_ABJ;
+%if %sysfunc(exist(&mycovid..COVID_DEATHS21)) %then %do;
+proc delete data=&mycovid..COVID_DEATHS21;
 run;
 %end;
 
@@ -406,7 +347,7 @@ run;
 proc sql;
 create table cases as select date_report as Date, Health_region as Region, 
 Province as Province,count(distinct case_ID) as Number_cases
-from mycovid.COVID_19_CANADA_CASE_ABJ
+from mycovid.COVID_19_CANADA_CASE
 group by Province, Region, Date;
 quit;
 
@@ -414,20 +355,13 @@ proc sort data=cases out=cases nodupkey;
                 by Region Province Date;
 run;
 
-/* data cases; */
-/* set cases; */
-/* new_date=input(date,ddmmyy10.); */
-/* format new_date date9.; */
-/* drop Date; */
-/* rename new_date=date; */
-/* run; */
 
 /*Create aggregate datasets from individual-level Deaths data*/
 
 proc sql;
 create table deaths as select date_report as Date, Health_region as Region, 
 Province as Province,count(distinct death_ID) as Number_deaths
-from mycovid.COVID_19_CANADA_DEATH_ABJ
+from mycovid.COVID_19_CANADA_DEATH
 group by Province, Region, Date;
 quit;
 
@@ -435,13 +369,7 @@ proc sort data=deaths out=deaths nodupkey;
                 by Region Province Date;
 run;
 
-/* data deaths; */
-/* set deaths; */
-/* new_date=input(date,ddmmyy10.); */
-/* format new_date date9.; */
-/* drop Date; */
-/* rename new_date=date; */
-/* run; */
+
 
 /*Subset Cases RBD data*/
 
@@ -689,23 +617,6 @@ from work.test
 group by Prov;
 quit;
 
-/* Drop if the file already exists */
-/* %if %sysfunc(exist(jsg_covid19_prod.COVID_19_CD_AB_test)) %then %do; */
-/*  */
-/* proc delete data=jsg_covid19_prod.COVID_19_CD_AB_test; */
-/* run; */
-/*  */
-/* %end; */
-/*  */
-/* Load and Promote into CAS */
-/* proc casutil; */
-/*            load data=work.join casout="COVID_19_CD_AB_test" outcaslib=jsg_covid19_prod; */
-/* run; */
-/*  */
-/* proc casutil; */
-/*            promote incaslib="jsg_covid19_prod" casdata="COVID_19_CD_AB_test"  */
-/*                            outcaslib="jsg_covid19_prod" casout="COVID_19_CD_AB_test"; */
-/*            quit; */
 
 /*SPLIT REGION_PROVINCE*/
 data join;
@@ -725,68 +636,57 @@ end;
 run;
 
 /*Drop if the file already exists*/
-%if %sysfunc(exist(&mycovid..COVID_19_CD_AB_NEW)) %then %do;
-proc delete data=&mycovid..COVID_19_CD_AB_NEW;
+%if %sysfunc(exist(&mycovid..COVID_19_CD)) %then %do;
+proc delete data=&mycovid..COVID_19_CD;
 run;
 %end;
 
 /*Load and save into CAS file system*/
 proc casutil;
-                load data=work.join casout="COVID_19_CD_AB_NEW" outcaslib=&mycovid replace;
+                load data=work.join casout="COVID_19_CD" outcaslib=&mycovid replace;
 run;
 
-/* proc casutil; */
-/*            promote incaslib="jsg_covid19_prod" casdata="COVID_19_CD_AB_NEW_test"  */
-/*                            outcaslib="jsg_covid19_prod" casout="COVID_19_CD_AB_NEW_test"; */
-/*            quit; */
+
 proc casutil;
-    save casdata="COVID_19_CD_AB_NEW" incaslib="&mycovid" outcaslib="&mycovid"
-                     casout="COVID_19_CD_AB_NEW" replace;
+    save casdata="COVID_19_CD" incaslib="&mycovid" outcaslib="&mycovid"
+                     casout="COVID_19_CD" replace;
 run;
 
 
 /******************************************RECOVER AND TEST tables: Load & Promote **********************/
 
 /*Drop if the file already exists*/
-%if %sysfunc(exist(&mycovid..COVID_19_REC_AB)) %then %do;
-proc delete data=&mycovid..COVID_19_REC_AB;
+%if %sysfunc(exist(&mycovid..COVID_19_REC)) %then %do;
+proc delete data=&mycovid..COVID_19_REC;
 run;
 %end;
 
 /*Load and save into CAS file system*/
 proc casutil;
-                load data=work.prep_rec casout="COVID_19_REC_AB" outcaslib=&mycovid replace;
+                load data=work.prep_rec casout="COVID_19_REC" outcaslib=&mycovid replace;
 run;
 
-/* proc casutil; */
-/*            promote incaslib="jsg_covid19_prod" casdata="COVID_19_REC_AB"  */
-/*                            outcaslib="jsg_covid19_prod" casout="COVID_19_REC_AB"; */
-/*            quit; */
+
 
 proc casutil;
-    save casdata="COVID_19_REC_AB" incaslib="&mycovid" outcaslib="&mycovid"
-                     casout="COVID_19_REC_AB" replace;
+    save casdata="COVID_19_REC" incaslib="&mycovid" outcaslib="&mycovid"
+                     casout="COVID_19_REC" replace;
 run;
 
 /*Drop if the file already exists*/
-%if %sysfunc(exist(&mycovid..COVID_19_TEST_AB)) %then %do;
-proc delete data=&mycovid..COVID_19_TEST_AB;
+%if %sysfunc(exist(&mycovid..COVID_19_TEST)) %then %do;
+proc delete data=&mycovid..COVID_19_TEST;
 run;
 %end;
 
 /*Load and save into CAS file system*/
 proc casutil;
-                load data=work.prep_test casout="COVID_19_TEST_AB" outcaslib=&mycovid replace;
+                load data=work.prep_test casout="COVID_19_TEST" outcaslib=&mycovid replace;
 run;
 
-/* proc casutil; */
-/*            promote incaslib="jsg_covid19_prod" casdata="COVID_19_TEST_AB"  */
-/*                            outcaslib="jsg_covid19_prod" casout="COVID_19_TEST_AB"; */
-/*            quit; */
-
 proc casutil;
-    save casdata="COVID_19_TEST_AB" incaslib="&mycovid" outcaslib="&mycovid"
-                     casout="COVID_19_TEST_AB" replace;
+    save casdata="COVID_19_TEST" incaslib="&mycovid" outcaslib="&mycovid"
+                     casout="COVID_19_TEST" replace;
 run;
 
 /*Delete unnecessary tables*/
@@ -805,4 +705,8 @@ proc delete data=&mycovid..COVID_19_CANADA_TEST;
 run;
 
 %end;
+
+quit;
+
+cas mysession terminate;
 
